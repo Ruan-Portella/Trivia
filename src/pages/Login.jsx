@@ -38,6 +38,7 @@ export default class Login extends Component {
     return (
       <div>
         <label htmlFor="userName">
+          Nome de Usuario
           <input
             value={ userName }
             type="text"
@@ -47,6 +48,7 @@ export default class Login extends Component {
           />
         </label>
         <label htmlFor="userEmail">
+          Email
           <input
             value={ userEmail }
             type="email"
