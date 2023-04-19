@@ -1,6 +1,7 @@
 import renderWithRouterAndRedux from "./helpers/renderWithRouterAndRedux";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import App from '../App'
 
 describe('Testa componente Login', () => {
   it('Verifica se Login foi redenrizada com input para nome, email, um botão "Play" desabilitado, um botão "Settings" ',()=>{
@@ -25,8 +26,7 @@ describe('Testa componente Login', () => {
     expect(btnPlay).toBeEnabled()
 
   })
-  it('Verifica se API é chamada, e a pagina é redirecionada para pagina de jogo',async ()=>{
-    global.fetch = jest.fn();
+  it('Verifica se API é chamada, e a pagina é redirecionada para pagina de jogo', async ()=>{
     const {history} = renderWithRouterAndRedux(<App/>)
     const inputName = screen.getByTestId('input-player-name')
     const inputEmail = screen.getByTestId('input-gravatar-email')
@@ -34,7 +34,8 @@ describe('Testa componente Login', () => {
     userEvent.type(inputName, 'Bode do Milhão')
     userEvent.type(inputEmail, 'bode@gmail.com')
     userEvent.click(btnPlay)
-    expect(globa.fetch).toBeCalledTimes(1)
+    const token = localStorage.getItem('token')
+    expect(token).not.toBeUndefined()
     await waitFor(()=>{
       const {location:{pathname}} = history
       expect(pathname).toBe('/game')
