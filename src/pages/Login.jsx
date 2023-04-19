@@ -64,6 +64,17 @@ export default class Login extends Component {
           Play
 
         </button>
+
+        <button
+          onClick={ () => {
+            const { history } = this.props;
+            history.push('/settings');
+          } }
+          type="button"
+          data-testid="btn-settings"
+        >
+          Settings
+        </button>
       </div>
     );
   }
