@@ -6,7 +6,11 @@ export default class Login extends Component {
     userEmail: '',
   };
 
-  isDisabled = () => true;
+  isDisabled = () => {
+    const { userEmail, userName } = this.state;
+    const enableBtn = userEmail.length > 0 && userName.length > 0;
+    return !enableBtn;
+  };
 
   handleChange = ({ target }) => {
     const { name, value } = target;
@@ -25,6 +29,7 @@ export default class Login extends Component {
             type="text"
             name="userName"
             onChange={ this.handleChange }
+            data-testid="input-player-name"
           />
         </label>
         <label htmlFor="userEmail">
@@ -33,11 +38,13 @@ export default class Login extends Component {
             type="email"
             name="userEmail"
             onChange={ this.handleChange }
+            data-testid="input-gravatar-email"
           />
         </label>
         <button
           type="button"
           disabled={ this.isDisabled() }
+          data-testid="btn-play"
         >
           Play
 
