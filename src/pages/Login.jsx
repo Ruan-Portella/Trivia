@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import fetchToken from '../services/fetchToken';
 
 export default class Login extends Component {
   state = {
@@ -27,8 +26,10 @@ export default class Login extends Component {
 
   getToken = async () => {
     const { history } = this.props;
-    const token = await fetchToken();
-    this.saveToken(token);
+    const URL = 'https://opentdb.com/api_token.php?command=request';
+    const getApi = await fetch(URL);
+    const response = await getApi.json();
+    this.saveToken(response.token);
     history.push('/game');
   };
 
@@ -62,6 +63,16 @@ export default class Login extends Component {
         >
           Play
 
+        </button>
+        <button
+          onClick={ () => {
+            const { history } = this.props;
+            history.push('/settings');
+          } }
+          type="button"
+          data-testid="btn-settings"
+        >
+          Settings
         </button>
       </div>
     );
