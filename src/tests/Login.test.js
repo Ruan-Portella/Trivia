@@ -1,6 +1,7 @@
 import renderWithRouterAndRedux from "./helpers/renderWithRouterAndRedux";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import App from '../App'
 
 describe('Testa componente Login', () => {
   it('Verifica se Login foi redenrizada com input para nome, email, um botão "Play" desabilitado, um botão "Settings" ',()=>{
@@ -34,7 +35,7 @@ describe('Testa componente Login', () => {
     userEvent.type(inputName, 'Bode do Milhão')
     userEvent.type(inputEmail, 'bode@gmail.com')
     userEvent.click(btnPlay)
-    expect(globa.fetch).toBeCalledTimes(1)
+    expect(global.fetch).toBeCalledTimes(1)
     await waitFor(()=>{
       const {location:{pathname}} = history
       expect(pathname).toBe('/game')
