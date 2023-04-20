@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Header from '../components/Header';
+import '../Game.css';
 
 class Game extends Component {
   state = {
     questions: [],
     isLoading: true,
     index: 0,
+    questionChosed: '',
   };
 
   componentDidMount() {
@@ -33,6 +35,23 @@ class Game extends Component {
     });
   };
 
+  setQuestionChosed = (text) => {
+    this.setState({
+      questionChosed: text,
+    });
+  };
+
+  ColorChange = (answers, text) => {
+    const { questionChosed } = this.state;
+    if (!questionChosed) {
+      return 'Questions';
+    }
+    if (text === answers) {
+      return 'correct';
+    }
+    return 'incorrect';
+  };
+
   render() {
     const { questions, isLoading, index } = this.state;
     const NUM_FIVE = 5;
@@ -41,7 +60,8 @@ class Game extends Component {
       this.setState({ isLoading: true, index: 0 });
     }
 
-    const questionIndex = questions[index];
+    const questionIndex = questions[0];
+
     let AnswerIndex = 0;
 
     if (isLoading) {
@@ -56,7 +76,10 @@ class Game extends Component {
       isCorrect: false,
     })),
     ];
+
+    console.log(answers);
     const shuffledArray = _.shuffle(answers);
+    console.log(shuffledArray);
 
     return (
       <div>
@@ -77,8 +100,12 @@ class Game extends Component {
               }
               return (
                 <button
-                  onClick={ () => { this.setState({ index: index + 1 }); } }
+                  className={
+                    this.ColorChange(answers[0].text, text)
+                  }
+                  onClick={ () => this.setQuestionChosed(text) }
                   key={ text }
+                  type="button"
                   data-testid={
                     isCorrect ? 'correct-answer' : `wrong-answer-${AnswerIndex}`
                   }
