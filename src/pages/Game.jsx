@@ -76,7 +76,10 @@ class Game extends Component {
       isCorrect: false,
     })),
     ];
+
+    console.log(answers);
     const shuffledArray = _.shuffle(answers);
+    console.log(shuffledArray);
 
     return (
       <div>
