@@ -10,6 +10,10 @@ class Game extends Component {
     isLoading: true,
     index: 0,
     questionChosed: '',
+    timerAnswers: 30,
+    shuffledArray: [],
+    questionIndex: '',
+    answers: [],
   };
 
   componentDidMount() {
@@ -31,8 +35,24 @@ class Game extends Component {
     }
     this.setState({
       questions: data.results,
-      isLoading: false,
     });
+    this.startTimer();
+    setTimeout(() => {
+      this.question();
+    }, 1);
+  };
+
+  startTimer = () => {
+    const oneSec = 1000;
+    const timer = setInterval(() => {
+      const { timerAnswers } = this.state;
+      if (timerAnswers > 0) {
+        this.setState({ timerAnswers: timerAnswers - 1 });
+      } else {
+        clearInterval(timer);
+        this.setState({ timerAnswers: null });
+      }
+    }, oneSec);
   };
 
   setQuestionChosed = (text) => {
@@ -42,7 +62,10 @@ class Game extends Component {
   };
 
   ColorChange = (answers, text) => {
-    const { questionChosed } = this.state;
+    const { questionChosed, timerAnswers } = this.state;
+    if (!timerAnswers) {
+      return 'incorrect';
+    }
     if (!questionChosed) {
       return 'Questions';
     }
@@ -52,22 +75,15 @@ class Game extends Component {
     return 'incorrect';
   };
 
-  render() {
-    const { questions, isLoading, index } = this.state;
-    const NUM_FIVE = 5;
+  question = () => {
+    const { questions, index } = this.state;
 
+    const NUM_FIVE = 5;
     if (index >= NUM_FIVE) {
       this.setState({ isLoading: true, index: 0 });
     }
 
     const questionIndex = questions[0];
-
-    let AnswerIndex = 0;
-
-    if (isLoading) {
-      return;
-    }
-
     const answers = [{
       text: questionIndex.correct_answer,
       isCorrect: true,
@@ -76,14 +92,29 @@ class Game extends Component {
       isCorrect: false,
     })),
     ];
-
-    console.log(answers);
+    console.log(questionIndex);
     const shuffledArray = _.shuffle(answers);
-    console.log(shuffledArray);
+    this.setState({
+      shuffledArray,
+      questionIndex,
+      isLoading: false,
+      answers,
+    });
+  };
+
+  render() {
+    const { isLoading, timerAnswers, shuffledArray, questionIndex, answers } = this.state;
+
+    let AnswerIndex = 0;
+
+    if (isLoading) {
+      return;
+    }
 
     return (
       <div>
         <Header />
+        <p>{timerAnswers}</p>
         {
           !isLoading ? (
             <>
@@ -106,6 +137,7 @@ class Game extends Component {
                   onClick={ () => this.setQuestionChosed(text) }
                   key={ text }
                   type="button"
+                  disabled={ !timerAnswers }
                   data-testid={
                     isCorrect ? 'correct-answer' : `wrong-answer-${AnswerIndex}`
                   }
@@ -127,5 +159,4 @@ Game.propTypes = {
     push: PropTypes.func.isRequired,
   }).isRequired,
 };
-
 export default Game;
