@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import { connect } from 'react-redux';
 import Header from '../components/Header';
+import { addScore } from '../redux/actions';
 import '../Game.css';
 
 class Game extends Component {
@@ -14,6 +16,7 @@ class Game extends Component {
     shuffledArray: [],
     questionIndex: '',
     answers: [],
+    timer: null,
   };
 
   componentDidMount() {
@@ -52,13 +55,34 @@ class Game extends Component {
         clearInterval(timer);
         this.setState({ timerAnswers: null });
       }
+      this.setState({ timer });
     }, oneSec);
   };
 
-  setQuestionChosed = (text) => {
+  setQuestionChosed = (answers, text) => {
+    console.log(answers.difficulty);
+    const { timer, timerAnswers } = this.state;
+    const { dispatch } = this.props;
     this.setState({
       questionChosed: text,
     });
+    const CORRECT_SCORE = 10;
+    const hardNumber = 3;
+    clearInterval(timer);
+    const setScore = (() => {
+      if (answers.difficulty === 'hard') {
+        return hardNumber;
+      } if (answers.difficulty === 'medium') {
+        return 2;
+      } if (answers.difficulty === 'easy') {
+        return 1;
+      }
+    })();
+
+    if (answers.correct_answer === text) {
+      const score = CORRECT_SCORE + (timerAnswers * setScore);
+      dispatch(addScore(score));
+    }
   };
 
   ColorChange = (answers, text) => {
@@ -103,7 +127,8 @@ class Game extends Component {
   };
 
   render() {
-    const { isLoading, timerAnswers, shuffledArray, questionIndex, answers } = this.state;
+    const { isLoading, timerAnswers, shuffledArray,
+      questionIndex, answers, questions } = this.state;
 
     let AnswerIndex = 0;
 
@@ -134,7 +159,7 @@ class Game extends Component {
                   className={
                     this.ColorChange(answers[0].text, text)
                   }
-                  onClick={ () => this.setQuestionChosed(text) }
+                  onClick={ () => this.setQuestionChosed(questions[0], text) }
                   key={ text }
                   type="button"
                   disabled={ !timerAnswers }
@@ -154,9 +179,9 @@ class Game extends Component {
 }
 
 Game.propTypes = {
-  // dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
 };
-export default Game;
+export default connect()(Game);
