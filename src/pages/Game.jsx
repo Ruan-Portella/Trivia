@@ -17,6 +17,7 @@ class Game extends Component {
     questionIndex: '',
     answers: [],
     timer: null,
+    buttonVisible: false,
   };
 
   componentDidMount() {
@@ -60,11 +61,11 @@ class Game extends Component {
   };
 
   setQuestionChosed = (answers, text) => {
-    console.log(answers.difficulty);
     const { timer, timerAnswers } = this.state;
     const { dispatch } = this.props;
     this.setState({
       questionChosed: text,
+      buttonVisible: true,
     });
     const CORRECT_SCORE = 10;
     const hardNumber = 3;
@@ -107,7 +108,7 @@ class Game extends Component {
       this.setState({ isLoading: true, index: 0 });
     }
 
-    const questionIndex = questions[0];
+    const questionIndex = questions[index];
     const answers = [{
       text: questionIndex.correct_answer,
       isCorrect: true,
@@ -116,7 +117,6 @@ class Game extends Component {
       isCorrect: false,
     })),
     ];
-    console.log(questionIndex);
     const shuffledArray = _.shuffle(answers);
     this.setState({
       shuffledArray,
@@ -126,9 +126,16 @@ class Game extends Component {
     });
   };
 
+  buttonNext = () => {
+    const { index } = this.state;
+    this.setState({ index: index + 1, questionChosed: '', buttonVisible: false });
+    this.question();
+    this.startTimer();
+  };
+
   render() {
     const { isLoading, timerAnswers, shuffledArray,
-      questionIndex, answers, questions } = this.state;
+      questionIndex, answers, questions, buttonVisible } = this.state;
 
     let AnswerIndex = 0;
 
@@ -171,6 +178,17 @@ class Game extends Component {
                 </button>
               );
             })
+          }
+          {
+            buttonVisible && (
+              <button
+                onClick={ () => this.buttonNext() }
+                data-testid="btn-next"
+              >
+                Next
+
+              </button>
+            )
           }
         </div>
       </div>
