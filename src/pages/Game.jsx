@@ -54,7 +54,7 @@ class Game extends Component {
         this.setState({ timerAnswers: timerAnswers - 1 });
       } else {
         clearInterval(timer);
-        this.setState({ timerAnswers: null });
+        this.setState({ timerAnswers: 0, buttonVisible: true });
       }
       this.setState({ timer });
     }, oneSec);
@@ -66,6 +66,7 @@ class Game extends Component {
     this.setState({
       questionChosed: text,
       buttonVisible: true,
+      // timerAnswers: null,
     });
     const CORRECT_SCORE = 10;
     const hardNumber = 3;
@@ -102,40 +103,46 @@ class Game extends Component {
 
   question = () => {
     const { questions, index } = this.state;
+    const { history } = this.props;
 
     const NUM_FIVE = 5;
     if (index >= NUM_FIVE) {
-      this.setState({ isLoading: true, index: 0 });
+      history.push('/feedback');
+    } else {
+      const questionIndex = questions[index];
+      const answers = [{
+        text: questionIndex.correct_answer,
+        isCorrect: true,
+      }, ...questionIndex.incorrect_answers.map((answer) => ({
+        text: answer,
+        isCorrect: false,
+      })),
+      ];
+      const shuffledArray = _.shuffle(answers);
+      this.setState({
+        shuffledArray,
+        questionIndex,
+        isLoading: false,
+        answers,
+        index: index + 1,
+      });
     }
-
-    const questionIndex = questions[index];
-    const answers = [{
-      text: questionIndex.correct_answer,
-      isCorrect: true,
-    }, ...questionIndex.incorrect_answers.map((answer) => ({
-      text: answer,
-      isCorrect: false,
-    })),
-    ];
-    const shuffledArray = _.shuffle(answers);
-    this.setState({
-      shuffledArray,
-      questionIndex,
-      isLoading: false,
-      answers,
-    });
   };
 
   buttonNext = () => {
-    const { index } = this.state;
-    this.setState({ index: index + 1, questionChosed: '', buttonVisible: false });
+    this.setState({
+      questionChosed: '',
+      buttonVisible: false,
+      timerAnswers: 30 });
     this.question();
-    this.startTimer();
+    setTimeout(() => {
+      this.startTimer();
+    }, 1);
   };
 
   render() {
     const { isLoading, timerAnswers, shuffledArray,
-      questionIndex, answers, questions, buttonVisible } = this.state;
+      questionIndex, answers, buttonVisible } = this.state;
 
     let AnswerIndex = 0;
 
@@ -166,10 +173,10 @@ class Game extends Component {
                   className={
                     this.ColorChange(answers[0].text, text)
                   }
-                  onClick={ () => this.setQuestionChosed(questions[0], text) }
+                  onClick={ () => this.setQuestionChosed(questionIndex, text) }
                   key={ text }
                   type="button"
-                  disabled={ !timerAnswers }
+                  disabled={ !timerAnswers || buttonVisible }
                   data-testid={
                     isCorrect ? 'correct-answer' : `wrong-answer-${AnswerIndex}`
                   }
