@@ -22,6 +22,12 @@ class Feedback extends Component {
     }
   }
 
+  playAgain = () => {
+    const { history } = this.props;
+
+    history.push('/');
+  };
+
   render() {
     const { name, score, gravatarEmail, assertions } = this.props;
     const { message } = this.state;
@@ -34,6 +40,13 @@ class Feedback extends Component {
         <p data-testid="feedback-text">{message}</p>
         <p data-testid="feedback-total-score">{score}</p>
         <p data-testid="feedback-total-question">{assertions}</p>
+        <button
+          data-testid="btn-play-again"
+          onClick={ () => this.playAgain() }
+        >
+          Play Again
+
+        </button>
       </section>
     );
   }
@@ -47,6 +60,9 @@ const mapStateToProps = (state) => ({
 });
 
 Feedback.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
   name: PropTypes.string.isRequired,
   score: PropTypes.number.isRequired,
   gravatarEmail: PropTypes.string.isRequired,
