@@ -24,7 +24,7 @@ class Feedback extends Component {
 
   render() {
     const { name, score, gravatarEmail } = this.props;
-    const { message } = this.state;
+    const { message } = this.state
     const picture = md5(gravatarEmail).toString();
     return (
       <section>
