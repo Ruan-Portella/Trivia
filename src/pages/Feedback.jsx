@@ -23,7 +23,7 @@ class Feedback extends Component {
   }
 
   render() {
-    const { name, score, gravatarEmail } = this.props;
+    const { name, score, gravatarEmail, assertions } = this.props;
     const { message } = this.state;
     const picture = md5(gravatarEmail).toString();
     return (
@@ -32,6 +32,8 @@ class Feedback extends Component {
         <p data-testid="header-player-name">{ name }</p>
         <span data-testid="header-score">{ score }</span>
         <p data-testid="feedback-text">{message}</p>
+        <p data-testid="feedback-total-score">{score}</p>
+        <p data-testid="feedback-total-question">{assertions}</p>
       </section>
     );
   }
