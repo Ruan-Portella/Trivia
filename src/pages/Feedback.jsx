@@ -24,8 +24,12 @@ class Feedback extends Component {
 
   playAgain = () => {
     const { history } = this.props;
-
     history.push('/');
+  };
+
+  btnRanking = () => {
+    const { history } = this.props;
+    history.push('/ranking');
   };
 
   render() {
@@ -46,6 +50,12 @@ class Feedback extends Component {
         >
           Play Again
 
+        </button>
+        <button
+          data-testid="btn-ranking"
+          onClick={ () => this.btnRanking() }
+        >
+          Settings
         </button>
       </section>
     );
