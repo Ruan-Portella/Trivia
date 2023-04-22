@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -22,7 +21,7 @@ class Ranking extends Component {
   render() {
     const { ranking } = this.state;
     return (
-      <div>
+      <div data-testid="ranking-title">
         <h1>Ranking</h1>
         {ranking.map((player, index) => (
           <div key={ index }>
@@ -62,14 +61,3 @@ Ranking.propTypes = {
 }.isRequired;
 
 export default Ranking;
-=======
-import React, { Component } from 'react';
-
-export default class Ranking extends Component {
-  render() {
-    return (
-      <p data-testid="ranking-title">Ranking</p>
-    );
-  }
-}
->>>>>>> main-group-6
