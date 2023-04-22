@@ -1,4 +1,4 @@
-import { ADD_USER, ADD_SCORE } from '../actions';
+import { ADD_USER, ADD_SCORE, REMOVE_SCORE } from '../actions';
 
 const INITIAL_STATE = {
   name: '',
@@ -20,6 +20,12 @@ const player = (state = INITIAL_STATE, action) => {
       ...state,
       score: state.score + action.payload.score,
       assertions: state.assertions + 1,
+    };
+  case REMOVE_SCORE:
+    return {
+      ...state,
+      score: 0,
+      assertions: 0,
     };
   default:
     return state;

@@ -20,7 +20,28 @@ class Feedback extends Component {
         message: 'Well Done!',
       });
     }
+    setTimeout(() => {
+      this.saveUserInRaking();
+    }, 1);
   }
+
+  getRanking = () => {
+    const ranking = localStorage.getItem('ranking');
+    return ranking ? JSON.parse(ranking) : [];
+  };
+
+  saveUserInRaking = () => {
+    const { name, score, gravatarEmail } = this.props;
+    const picture = md5(gravatarEmail).toString();
+    const ranking = this.getRanking();
+    const user = {
+      name,
+      score,
+      picture,
+    };
+    const listRanking = [...ranking, user];
+    localStorage.setItem('ranking', JSON.stringify(listRanking));
+  };
 
   playAgain = () => {
     const { history } = this.props;
@@ -55,7 +76,7 @@ class Feedback extends Component {
           data-testid="btn-ranking"
           onClick={ () => this.btnRanking() }
         >
-          Settings
+          Ranking
         </button>
       </section>
     );
