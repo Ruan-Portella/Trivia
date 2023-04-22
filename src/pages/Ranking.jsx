@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -61,3 +62,14 @@ Ranking.propTypes = {
 }.isRequired;
 
 export default Ranking;
+=======
+import React, { Component } from 'react';
+
+export default class Ranking extends Component {
+  render() {
+    return (
+      <p data-testid="ranking-title">Ranking</p>
+    );
+  }
+}
+>>>>>>> main-group-6
