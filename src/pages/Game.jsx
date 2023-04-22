@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import { connect } from 'react-redux';
 import Header from '../components/Header';
+import { addScore } from '../redux/actions';
 import '../Game.css';
 
 class Game extends Component {
@@ -10,6 +12,12 @@ class Game extends Component {
     isLoading: true,
     index: 0,
     questionChosed: '',
+    timerAnswers: 30,
+    shuffledArray: [],
+    questionIndex: '',
+    answers: [],
+    timer: null,
+    buttonVisible: false,
   };
 
   componentDidMount() {
@@ -31,18 +39,59 @@ class Game extends Component {
     }
     this.setState({
       questions: data.results,
-      isLoading: false,
     });
+    this.startTimer();
+    setTimeout(() => {
+      this.question();
+    }, 1);
   };
 
-  setQuestionChosed = (text) => {
+  startTimer = () => {
+    const oneSec = 1000;
+    const timer = setInterval(() => {
+      const { timerAnswers } = this.state;
+      if (timerAnswers > 0) {
+        this.setState({ timerAnswers: timerAnswers - 1 });
+      } else {
+        clearInterval(timer);
+        this.setState({ timerAnswers: 0, buttonVisible: true });
+      }
+      this.setState({ timer });
+    }, oneSec);
+  };
+
+  setQuestionChosed = (answers, text) => {
+    const { timer, timerAnswers } = this.state;
+    const { dispatch } = this.props;
     this.setState({
       questionChosed: text,
+      buttonVisible: true,
+      // timerAnswers: null,
     });
+    const CORRECT_SCORE = 10;
+    const hardNumber = 3;
+    clearInterval(timer);
+    const setScore = (() => {
+      if (answers.difficulty === 'hard') {
+        return hardNumber;
+      } if (answers.difficulty === 'medium') {
+        return 2;
+      } if (answers.difficulty === 'easy') {
+        return 1;
+      }
+    })();
+
+    if (answers.correct_answer === text) {
+      const score = CORRECT_SCORE + (timerAnswers * setScore);
+      dispatch(addScore(score));
+    }
   };
 
   ColorChange = (answers, text) => {
-    const { questionChosed } = this.state;
+    const { questionChosed, timerAnswers } = this.state;
+    if (!timerAnswers) {
+      return 'incorrect';
+    }
     if (!questionChosed) {
       return 'Questions';
     }
@@ -52,15 +101,48 @@ class Game extends Component {
     return 'incorrect';
   };
 
-  render() {
-    const { questions, isLoading, index } = this.state;
+  question = () => {
+    const { questions, index } = this.state;
+    const { history } = this.props;
+
     const NUM_FIVE = 5;
-
     if (index >= NUM_FIVE) {
-      this.setState({ isLoading: true, index: 0 });
+      history.push('/feedback');
+    } else {
+      const questionIndex = questions[index];
+      const answers = [{
+        text: questionIndex.correct_answer,
+        isCorrect: true,
+      }, ...questionIndex.incorrect_answers.map((answer) => ({
+        text: answer,
+        isCorrect: false,
+      })),
+      ];
+      const shuffledArray = _.shuffle(answers);
+      this.setState({
+        shuffledArray,
+        questionIndex,
+        isLoading: false,
+        answers,
+        index: index + 1,
+      });
     }
+  };
 
-    const questionIndex = questions[0];
+  buttonNext = () => {
+    this.setState({
+      questionChosed: '',
+      buttonVisible: false,
+      timerAnswers: 30 });
+    this.question();
+    setTimeout(() => {
+      this.startTimer();
+    }, 1);
+  };
+
+  render() {
+    const { isLoading, timerAnswers, shuffledArray,
+      questionIndex, answers, buttonVisible } = this.state;
 
     let AnswerIndex = 0;
 
@@ -68,22 +150,10 @@ class Game extends Component {
       return;
     }
 
-    const answers = [{
-      text: questionIndex.correct_answer,
-      isCorrect: true,
-    }, ...questionIndex.incorrect_answers.map((answer) => ({
-      text: answer,
-      isCorrect: false,
-    })),
-    ];
-
-    console.log(answers);
-    const shuffledArray = _.shuffle(answers);
-    console.log(shuffledArray);
-
     return (
       <div>
         <Header />
+        <p>{timerAnswers}</p>
         {
           !isLoading ? (
             <>
@@ -103,9 +173,10 @@ class Game extends Component {
                   className={
                     this.ColorChange(answers[0].text, text)
                   }
-                  onClick={ () => this.setQuestionChosed(text) }
+                  onClick={ () => this.setQuestionChosed(questionIndex, text) }
                   key={ text }
                   type="button"
+                  disabled={ !timerAnswers || buttonVisible }
                   data-testid={
                     isCorrect ? 'correct-answer' : `wrong-answer-${AnswerIndex}`
                   }
@@ -115,6 +186,17 @@ class Game extends Component {
               );
             })
           }
+          {
+            buttonVisible && (
+              <button
+                onClick={ () => this.buttonNext() }
+                data-testid="btn-next"
+              >
+                Next
+
+              </button>
+            )
+          }
         </div>
       </div>
     );
@@ -122,10 +204,9 @@ class Game extends Component {
 }
 
 Game.propTypes = {
-  // dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
 };
-
-export default Game;
+export default connect()(Game);
