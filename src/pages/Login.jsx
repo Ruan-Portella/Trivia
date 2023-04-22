@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { addUserAction } from '../redux/actions/index';
+import { addUserAction, removeScore } from '../redux/actions/index';
 
 class Login extends Component {
   state = {
@@ -34,6 +34,7 @@ class Login extends Component {
     const response = await getApi.json();
     this.saveToken(response.token);
     dispatch(addUserAction(userName, userEmail));
+    dispatch(removeScore());
     history.push('/game');
   };
 
