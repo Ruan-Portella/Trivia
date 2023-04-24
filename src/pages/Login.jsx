@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { CiSettings } from 'react-icons/ci';
 import { addUserAction, removeScore } from '../redux/actions/index';
+import TriviaLogo from '../images/trivia.png';
+import '../styles/Login.css';
 
 class Login extends Component {
   state = {
@@ -41,45 +44,62 @@ class Login extends Component {
   render() {
     const { userName, userEmail } = this.state;
     return (
-      <div>
-        <label htmlFor="userName">
-          <input
-            value={ userName }
-            type="text"
-            name="userName"
-            onChange={ this.handleChange }
-            data-testid="input-player-name"
-          />
-        </label>
-        <label htmlFor="userEmail">
-          <input
-            value={ userEmail }
-            type="email"
-            name="userEmail"
-            onChange={ this.handleChange }
-            data-testid="input-gravatar-email"
-          />
-        </label>
-        <button
-          type="button"
-          disabled={ this.isDisabled() }
-          data-testid="btn-play"
-          onClick={ this.getToken }
-        >
-          Play
-
-        </button>
-        <button
-          onClick={ () => {
-            const { history } = this.props;
-            history.push('/settings');
-          } }
-          type="button"
-          data-testid="btn-settings"
-        >
-          Settings
-        </button>
-      </div>
+      <section className="login-content">
+        <div className="left-content">
+          <img className="TriviaLogo" src={ TriviaLogo } alt="logo" />
+        </div>
+        <div className="right-content">
+          <div className="form-content">
+            <label htmlFor="userName">
+              <input
+                value={ userName }
+                placeholder="Qual é o seu nome?"
+                type="text"
+                name="userName"
+                onChange={ this.handleChange }
+                data-testid="input-player-name"
+                maxLength={ 16 }
+              />
+            </label>
+            <label htmlFor="userEmail">
+              <input
+                value={ userEmail }
+                placeholder="Qual é o seu e-mail do gravatar?"
+                type="email"
+                name="userEmail"
+                onChange={ this.handleChange }
+                data-testid="input-gravatar-email"
+              />
+            </label>
+            <button
+              className={ this.isDisabled() ? 'cta disable' : 'cta' }
+              type="button"
+              disabled={ this.isDisabled() }
+              data-testid="btn-play"
+              onClick={ this.getToken }
+            >
+              Play
+            </button>
+            <button
+              className="cta"
+              onClick={ () => {
+                const { history } = this.props;
+                history.push('/settings');
+              } }
+              type="button"
+              data-testid="btn-settings"
+            >
+              <CiSettings size={ 20 } />
+              Settings
+            </button>
+            {
+              this.isDisabled() && (<p>Insira um email e/ou nome válido</p>)
+            }
+          </div>
+          <span>NEXT</span>
+          <span />
+        </div>
+      </section>
     );
   }
 }

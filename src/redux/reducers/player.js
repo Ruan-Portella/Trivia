@@ -1,10 +1,14 @@
-import { ADD_USER, ADD_SCORE, REMOVE_SCORE } from '../actions';
+import { ADD_USER, ADD_SCORE, REMOVE_SCORE, NEW_SETTINGS } from '../actions';
 
 const INITIAL_STATE = {
   name: '',
   assertions: 0,
   score: 0,
   gravatarEmail: '',
+  amount: 5,
+  type: '',
+  category: '',
+  difficulty: '',
 };
 
 const player = (state = INITIAL_STATE, action) => {
@@ -26,6 +30,14 @@ const player = (state = INITIAL_STATE, action) => {
       ...state,
       score: 0,
       assertions: 0,
+    };
+  case NEW_SETTINGS:
+    return {
+      ...state,
+      amount: action.payload.amount,
+      type: action.payload.type,
+      category: action.payload.category,
+      difficulty: action.payload.difficulty,
     };
   default:
     return state;

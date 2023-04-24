@@ -1,5 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { AiFillStar } from 'react-icons/ai';
+import TriviaLogo from '../images/trivia.png';
+import '../styles/Ranking.css';
 
 class Ranking extends Component {
   state = {
@@ -22,36 +25,58 @@ class Ranking extends Component {
   render() {
     const { ranking } = this.state;
     return (
-      <div>
-        <h1 data-testid="ranking-title">Ranking</h1>
-        {
-          ranking.map((player, index) => (
-            <div key={ index }>
-              <img src={ player.picture } alt={ player.name } />
-              <p
-                data-testid={ `player-name-${index}` }
-              >
-                {player.name}
+      <div className="Ranking-Main">
+        <img className="TriviaLogoRanking" src={ TriviaLogo } alt="logo" />
+        <section className="ranking-content">
+          <section className="ranking-title">
+            <h1 data-testid="ranking-title">Ranking</h1>
+          </section>
+          <section className="ranking-users">
+            <ul className="ul-ranking">
+              {
+                ranking.map((player, index) => (
+                  <li key={ index } className="li-ranking">
+                    <section className="player-info">
+                      <section>
+                        <img className="player-image" src={ `https://www.gravatar.com/avatar/${player.picture}` } alt={ player.name } />
+                      </section>
+                      <section className="player-name">
+                        <p
+                          data-testid={ `player-name-${index}` }
+                        >
+                          {player.name}
 
-              </p>
-              <p
-                data-testid={ `player-score-${index}` }
-              >
-                {player.score}
+                        </p>
 
-              </p>
-            </div>
-          ))
-        }
-
-        <button
-          data-testid="btn-go-home"
-          type="button"
-          onClick={ this.goHome }
-        >
-          Inicio
-
-        </button>
+                      </section>
+                    </section>
+                    <section>
+                      <span data-testid="header-score" className="Score-ranking">
+                        <AiFillStar fill="orange" size={ 50 } />
+                        <p
+                          className="iconScoreRanking"
+                          data-testid={ `player-score-${index}` }
+                        >
+                          {` Pontos: ${player.score} `}
+                        </p>
+                      </span>
+                    </section>
+                  </li>
+                ))
+              }
+            </ul>
+          </section>
+          <section className="btn-ranking">
+            <button
+              className="cta"
+              data-testid="btn-go-home"
+              type="button"
+              onClick={ this.goHome }
+            >
+              Jogar Novamente
+            </button>
+          </section>
+        </section>
       </div>
     );
   }

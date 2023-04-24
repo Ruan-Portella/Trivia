@@ -2,14 +2,17 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { connect } from 'react-redux';
+import { AiFillCloseCircle, AiFillClockCircle } from 'react-icons/ai';
+import { BsCheckCircleFill } from 'react-icons/bs';
 import Header from '../components/Header';
 import { addScore } from '../redux/actions';
-import '../Game.css';
+import '../styles/Game.css';
+import { fetchApi } from '../services/fetchApi';
+import { setColor } from '../services/SetColor';
 
 class Game extends Component {
   state = {
     questions: [],
-    isLoading: true,
     index: 0,
     questionChosed: '',
     timerAnswers: 30,
@@ -18,6 +21,7 @@ class Game extends Component {
     answers: [],
     timer: null,
     buttonVisible: false,
+    amount: null,
   };
 
   componentDidMount() {
@@ -25,20 +29,19 @@ class Game extends Component {
   }
 
   fetchApiQuestion = async () => {
-    this.setState({ index: 0 });
+    const { amount, category, difficulty, type } = this.props;
     const RESPONSE_ERROR_CODE = 3;
-    const token = localStorage.getItem('token');
-    const URL = `https://opentdb.com/api.php?amount=5&token=${token}`;
-    const response = await fetch(URL);
-    const data = await response.json();
+    this.setState({ index: 0 });
+    const data = await fetchApi(amount, category, difficulty, type);
 
-    if (data.response_code === RESPONSE_ERROR_CODE) {
+    if (data.response_code >= RESPONSE_ERROR_CODE) {
       localStorage.removeItem('token');
       const { history } = this.props;
       return history.push('/');
     }
     this.setState({
       questions: data.results,
+      amount,
     });
     this.startTimer();
     setTimeout(() => {
@@ -66,7 +69,6 @@ class Game extends Component {
     this.setState({
       questionChosed: text,
       buttonVisible: true,
-      // timerAnswers: null,
     });
     const CORRECT_SCORE = 10;
     const hardNumber = 3;
@@ -80,7 +82,6 @@ class Game extends Component {
         return 1;
       }
     })();
-
     if (answers.correct_answer === text) {
       const score = CORRECT_SCORE + (timerAnswers * setScore);
       dispatch(addScore(score));
@@ -89,43 +90,52 @@ class Game extends Component {
 
   ColorChange = (answers, text) => {
     const { questionChosed, timerAnswers } = this.state;
-    if (!timerAnswers) {
-      return 'incorrect';
-    }
-    if (!questionChosed) {
-      return 'Questions';
-    }
-    if (text === answers) {
-      return 'correct';
-    }
-    return 'incorrect';
+    return setColor(timerAnswers, questionChosed, answers, text);
   };
 
   question = () => {
-    const { questions, index } = this.state;
+    const { questions, index, amount } = this.state;
     const { history } = this.props;
-
-    const NUM_FIVE = 5;
-    if (index >= NUM_FIVE) {
+    if (index >= amount) {
       history.push('/feedback');
     } else {
       const questionIndex = questions[index];
       const answers = [{
         text: questionIndex.correct_answer,
         isCorrect: true,
+        letter: '',
+        showAnswer: <BsCheckCircleFill size={ 40 } fill="green" />,
       }, ...questionIndex.incorrect_answers.map((answer) => ({
         text: answer,
         isCorrect: false,
-      })),
-      ];
+        letter: '',
+        showAnswer: <AiFillCloseCircle size={ 50 } fill="red" />,
+      }))];
       const shuffledArray = _.shuffle(answers);
-      this.setState({
-        shuffledArray,
-        questionIndex,
-        isLoading: false,
-        answers,
-        index: index + 1,
+      const letter = shuffledArray.map((answer, indexLetter) => {
+        if (answer.letter === '') {
+          answer.letter = this.configureLetter(indexLetter);
+        }
+        return answer.letter;
       });
+      console.log(letter);
+      this.setState({ shuffledArray, questionIndex, answers, index: index + 1 });
+    }
+  };
+
+  configureLetter = (index) => {
+    const Index3 = 3;
+    switch (index) {
+    case 0:
+      return 'D';
+    case 1:
+      return 'C';
+    case 2:
+      return 'B';
+    case Index3:
+      return 'A';
+    default:
+      break;
     }
   };
 
@@ -141,59 +151,75 @@ class Game extends Component {
   };
 
   render() {
-    const { isLoading, timerAnswers, shuffledArray,
+    const { timerAnswers, shuffledArray,
       questionIndex, answers, buttonVisible } = this.state;
-
     let AnswerIndex = 0;
-
-    if (isLoading) {
-      return;
-    }
-
     return (
-      <div>
+      <div className="mainGame">
         <Header />
-        <p>{timerAnswers}</p>
-        {
-          !isLoading ? (
-            <>
+        <div className="Game-Content">
+          <div className="Game-Question">
+            <div className="Game-Category">
               <p data-testid="question-category">{questionIndex.category}</p>
-              <p data-testid="question-text">{questionIndex.question}</p>
-            </>
-          ) : (<p>...Loading</p>)
-        }
-        <div data-testid="answer-options">
-          {
-            shuffledArray.map(({ text, isCorrect }) => {
-              if (!isCorrect) {
-                AnswerIndex += 1;
-              }
-              return (
-                <button
-                  className={
-                    this.ColorChange(answers[0].text, text)
-                  }
-                  onClick={ () => this.setQuestionChosed(questionIndex, text) }
-                  key={ text }
-                  type="button"
-                  disabled={ !timerAnswers || buttonVisible }
-                  data-testid={
-                    isCorrect ? 'correct-answer' : `wrong-answer-${AnswerIndex}`
-                  }
-                >
-                  {text}
-                </button>
-              );
-            })
-          }
+            </div>
+            <div className="Game-QuestionContent">
+              <span
+                className="question"
+                data-testid="question-text"
+              >
+                {questionIndex.question}
+              </span>
+              <p className="questiontimer">
+                <span className="TimeIcon">
+                  <AiFillClockCircle fill="red" />
+                </span>
+                {`Tempo: ${timerAnswers}`}
+              </p>
+            </div>
+          </div>
+          <div data-testid="answer-options" className="Game-Answers">
+            {
+              shuffledArray.map(({ text, isCorrect, letter, showAnswer }) => {
+                if (!isCorrect) {
+                  AnswerIndex += 1;
+                }
+                return (
+                  <button
+                    className={
+                      this.ColorChange(answers[0].text, text)
+                    }
+                    onClick={ () => this.setQuestionChosed(questionIndex, text) }
+                    key={ text }
+                    type="button"
+                    disabled={ !timerAnswers || buttonVisible }
+                    data-testid={
+                      isCorrect ? 'correct-answer' : `wrong-answer-${AnswerIndex}`
+                    }
+                  >
+                    {
+                      buttonVisible ? (
+                        <span
+                          className="color"
+                        >
+                          { showAnswer }
+                        </span>) : <span>{ letter }</span>
+                    }
+                    <span>{text}</span>
+                  </button>
+                );
+              })
+            }
+          </div>
+        </div>
+        <div className="ButtonNext">
           {
             buttonVisible && (
               <button
                 onClick={ () => this.buttonNext() }
                 data-testid="btn-next"
+                className="btn-next"
               >
                 Next
-
               </button>
             )
           }
@@ -203,10 +229,22 @@ class Game extends Component {
   }
 }
 
+const mapStateToProps = (state) => ({
+  amount: state.player.amount,
+  category: state.player.category,
+  difficulty: state.player.difficulty,
+  type: state.player.type,
+});
+
 Game.propTypes = {
+  amount: PropTypes.number.isRequired,
+  category: PropTypes.string.isRequired,
+  difficulty: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
 };
-export default connect()(Game);
+
+export default connect(mapStateToProps)(Game);

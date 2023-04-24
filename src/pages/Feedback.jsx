@@ -2,10 +2,13 @@ import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import md5 from 'crypto-js/md5';
 import PropTypes from 'prop-types';
+import TriviaLogo from '../images/trivia.png';
+import '../styles/Feedback.css';
 
 class Feedback extends Component {
   state = {
     message: '',
+    text: '',
   };
 
   componentDidMount() {
@@ -14,10 +17,12 @@ class Feedback extends Component {
     if (assertions < QuestionsAssertion3) {
       this.setState({
         message: 'Could be better...',
+        text: 'bad',
       });
     } else if (assertions >= QuestionsAssertion3) {
       this.setState({
         message: 'Well Done!',
+        text: 'good',
       });
     }
     setTimeout(() => {
@@ -41,6 +46,7 @@ class Feedback extends Component {
     };
     const listRanking = [...ranking, user];
     localStorage.setItem('ranking', JSON.stringify(listRanking));
+    dispatch(removeScore());
   };
 
   playAgain = () => {
@@ -54,30 +60,61 @@ class Feedback extends Component {
   };
 
   render() {
-    const { name, score, gravatarEmail, assertions } = this.props;
-    const { message } = this.state;
+    const { score, gravatarEmail, assertions } = this.props;
+    const { message, text } = this.state;
     const picture = md5(gravatarEmail).toString();
     return (
-      <section>
-        <img data-testid="header-profile-picture" src={ `https://www.gravatar.com/avatar/${picture}` } alt="" />
-        <p data-testid="header-player-name">{ name }</p>
-        <span data-testid="header-score">{ score }</span>
-        <p data-testid="feedback-text">{message}</p>
-        <p data-testid="feedback-total-score">{score}</p>
-        <p data-testid="feedback-total-question">{assertions}</p>
-        <button
-          data-testid="btn-play-again"
-          onClick={ () => this.playAgain() }
-        >
-          Play Again
+      <section className="feedback-Main">
+        <img className="TriviaLogoFeedback" src={ TriviaLogo } alt="logo" />
+        <section className="feedback-content">
+          <section className="feedback-userImage">
+            <img className={ `userImage-${text}` } data-testid="header-profile-picture" src={ `https://www.gravatar.com/avatar/${picture}` } alt="" />
+          </section>
+          <section className="feedback-information">
+            <section>
+              <p
+                className={ `feedback-message-${text}` }
+                data-testid="feedback-text"
+              >
+                {message}
 
-        </button>
-        <button
-          data-testid="btn-ranking"
-          onClick={ () => this.btnRanking() }
-        >
-          Ranking
-        </button>
+              </p>
+            </section>
+            <section>
+              <span
+                className="feedback-text"
+                data-testid="feedback-total-score"
+              >
+                {` Você acertou ${assertions} questões`}
+
+              </span>
+              <span
+                className="feedback-text"
+                data-testid="feedback-total-question"
+              >
+                {`Um total de ${score} pontos`}
+
+              </span>
+            </section>
+          </section>
+        </section>
+        <section className="feeback-btn">
+          <button
+            className="cta-feedback"
+            data-testid="btn-play-again"
+            onClick={ () => this.playAgain() }
+          >
+            Play Again
+
+          </button>
+          <button
+            className="cta-feedback"
+            data-testid="btn-ranking"
+            onClick={ () => this.btnRanking() }
+          >
+            Ranking
+          </button>
+        </section>
       </section>
     );
   }

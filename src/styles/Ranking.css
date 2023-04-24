@@ -1,0 +1,133 @@
+.Ranking-Main {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: flex-start;
+  width: 100vw;
+}
+
+.TriviaLogoRanking {
+  margin-top: 50px;
+  width: 13%;
+  z-index: 1;
+}
+
+.ranking-content {
+  align-items: center;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 1px 4px 13px 2px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  height: 70vh;
+  justify-content: center;
+  margin-top: -100px;
+  width: 50vw;
+}
+
+.ranking-title {
+  color: #3c1b7a;
+  font-size: 30px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 150%;
+  margin-top: 80px;
+  text-transform: uppercase;
+}
+
+.ranking-users {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  width: inherit;
+}
+
+ul {
+  padding: 0;
+}
+
+.ul-ranking {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 16px;
+  justify-content: center;
+  width: inherit;
+}
+
+.li-ranking {
+  align-items: center;
+  background: #ebebeb;
+  border-radius: 30px;
+  display: flex;
+  flex-direction: row;
+  height: 50px;
+  justify-content: space-between;
+  list-style: none;
+  width: 45%;
+}
+
+.player-info {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.player-image {
+  background-color: transparent;
+  border-radius: 50%;
+  width: 100%;
+}
+
+.player-name {
+  width: 100%;
+}
+
+.Score-ranking {
+  align-items: center;
+  background: white;
+  border-radius: 100px;
+  box-shadow: 0 4px 22px rgba(0, 0, 0, 0.25);
+  color: black;
+  display: flex;
+  justify-content: center;
+  width: 120px;
+}
+
+.iconScoreRanking {
+  width: 100%;
+}
+
+.btn-ranking {
+  margin-bottom: 20px;
+}
+
+@media only screen and ( max-width : 1030px ) {
+
+  .ranking-content {
+    width: 90vw;
+  }
+
+  .ranking-users {
+    margin-bottom: 0;
+  }
+}
+
+@media only screen and ( max-width : 620px ) {
+
+  .Ranking-Main {
+    justify-content: center;
+  }
+
+  .TriviaLogoRanking {
+    width: 20%;
+  }
+
+  .li-ranking {
+    width: 90%;
+  }
+}
