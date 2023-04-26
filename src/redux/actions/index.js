@@ -2,6 +2,7 @@ export const ADD_USER = 'ADD_USER';
 export const ADD_SCORE = 'ADD_SCORE';
 export const REMOVE_SCORE = 'REMOVE_SCORE';
 export const NEW_SETTINGS = 'NEW_SETTINGS';
+export const REMOVE_SETTINGS = 'REMOVE_SETTINGS';
 
 export const addUserAction = (name, email) => ({
   type: ADD_USER,
@@ -30,4 +31,8 @@ export const newSettings = (amount, category, difficulty, type) => ({
     difficulty,
     type,
   },
+});
+
+export const removeSettings = () => ({
+  type: REMOVE_SETTINGS,
 });

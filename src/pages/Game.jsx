@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-max-depth */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -112,6 +113,7 @@ class Game extends Component {
         showAnswer: <AiFillCloseCircle size={ 50 } fill="red" />,
       }))];
       const shuffledArray = _.shuffle(answers);
+      console.log(shuffledArray);
       const letter = shuffledArray.map((answer, indexLetter) => {
         if (answer.letter === '') {
           answer.letter = this.configureLetter(indexLetter);
@@ -127,13 +129,13 @@ class Game extends Component {
     const Index3 = 3;
     switch (index) {
     case 0:
-      return 'D';
-    case 1:
-      return 'C';
-    case 2:
-      return 'B';
-    case Index3:
       return 'A';
+    case 1:
+      return 'B';
+    case 2:
+      return 'C';
+    case Index3:
+      return 'D';
     default:
       break;
     }
@@ -166,9 +168,10 @@ class Game extends Component {
               <span
                 className="question"
                 data-testid="question-text"
-              >
-                {questionIndex.question}
-              </span>
+                dangerouslySetInnerHTML={
+                  { __html: questionIndex.question }
+                }
+              />
               <p className="questiontimer">
                 <span className="TimeIcon">
                   <AiFillClockCircle fill="red" />
@@ -228,14 +231,12 @@ class Game extends Component {
     );
   }
 }
-
 const mapStateToProps = (state) => ({
   amount: state.player.amount,
   category: state.player.category,
   difficulty: state.player.difficulty,
   type: state.player.type,
 });
-
 Game.propTypes = {
   amount: PropTypes.number.isRequired,
   category: PropTypes.string.isRequired,
@@ -246,5 +247,4 @@ Game.propTypes = {
     push: PropTypes.func.isRequired,
   }).isRequired,
 };
-
 export default connect(mapStateToProps)(Game);

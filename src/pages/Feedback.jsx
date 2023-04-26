@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import md5 from 'crypto-js/md5';
 import PropTypes from 'prop-types';
 import TriviaLogo from '../images/trivia.png';
+import { removeScore, removeSettings } from '../redux/actions';
 import '../styles/Feedback.css';
 
 class Feedback extends Component {
@@ -13,7 +14,7 @@ class Feedback extends Component {
 
   componentDidMount() {
     const QuestionsAssertion3 = 3;
-    const { assertions } = this.props;
+    const { assertions, dispatch } = this.props;
     if (assertions < QuestionsAssertion3) {
       this.setState({
         message: 'Could be better...',
@@ -25,6 +26,7 @@ class Feedback extends Component {
         text: 'good',
       });
     }
+    dispatch(removeSettings());
     setTimeout(() => {
       this.saveUserInRaking();
     }, 1);
@@ -46,17 +48,18 @@ class Feedback extends Component {
     };
     const listRanking = [...ranking, user];
     localStorage.setItem('ranking', JSON.stringify(listRanking));
-    dispatch(removeScore());
   };
 
   playAgain = () => {
-    const { history } = this.props;
+    const { history, dispatch } = this.props;
     history.push('/');
+    dispatch(removeScore());
   };
 
   btnRanking = () => {
-    const { history } = this.props;
+    const { history, dispatch } = this.props;
     history.push('/ranking');
+    dispatch(removeScore());
   };
 
   render() {
@@ -131,6 +134,7 @@ Feedback.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
+  dispatch: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
   score: PropTypes.number.isRequired,
   gravatarEmail: PropTypes.string.isRequired,

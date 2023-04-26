@@ -1,4 +1,5 @@
-import { ADD_USER, ADD_SCORE, REMOVE_SCORE, NEW_SETTINGS } from '../actions';
+import { ADD_USER, ADD_SCORE, REMOVE_SCORE,
+  NEW_SETTINGS, REMOVE_SETTINGS } from '../actions';
 
 const INITIAL_STATE = {
   name: '',
@@ -38,6 +39,14 @@ const player = (state = INITIAL_STATE, action) => {
       type: action.payload.type,
       category: action.payload.category,
       difficulty: action.payload.difficulty,
+    };
+  case REMOVE_SETTINGS:
+    return {
+      ...state,
+      amount: 5,
+      tyoe: '',
+      category: '',
+      difficulty: '',
     };
   default:
     return state;
